@@ -1,5 +1,7 @@
 //You don't need to change anything in this file
 //This file is creating and formatting the UI for you
+
+//imports all neccesarry directories in order for the program to work
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -10,45 +12,46 @@ import javax.swing.event.CaretListener;
 
 public class FancyConsole extends JFrame 
 {
-
+    
+   //set up the dimesnions of the frame object 
   int guiWidth;
   int guiHeight;
-	JTextField tfIn;
+    JTextField tfIn;
   JTextArea taOut;
   JScrollPane scrollPane;
   String consoleText;
   JLabel consoleImage;
-	
+    
 
-	private final PipedInputStream inPipe = new PipedInputStream(); 
+    private final PipedInputStream inPipe = new PipedInputStream(); 
   private final PipedInputStream outPipe = new PipedInputStream(); 
 
-	PrintWriter inWriter;
-	
-	
-	FancyConsole(String title, int width, int height) 
+    PrintWriter inWriter;
+    
+    
+    FancyConsole(String title, int width, int height) //frame constructor
   {
-		super(title);
+        super(title);
     guiWidth = width;
     guiHeight = height;
 
-	 
-	    // 2. set the System.in and System.out streams 
-	    System.setIn(inPipe); 
-	    try 
+     
+        // 2. set the System.in and System.out streams 
+        System.setIn(inPipe); 
+        try 
       {
-	    	System.setOut(new PrintStream(new PipedOutputStream(outPipe), true)); 
-	    	inWriter = new PrintWriter(new PipedOutputStream(inPipe), true); 
-	    }
-	    catch(IOException e) 
+            System.setOut(new PrintStream(new PipedOutputStream(outPipe), true)); 
+            inWriter = new PrintWriter(new PipedOutputStream(inPipe), true); 
+        }
+        catch(IOException e) 
       {
-	    	System.out.println("Error: " + e);
-	    	return;
-	    }
+            System.out.println("Error: " + e);
+            return;
+        }
 
       consoleText = "";
-	    
-	    JPanel panel = new JPanel(new BorderLayout());
+        
+        JPanel panel = new JPanel(new BorderLayout());
       taOut = new JTextArea(20, 40);
       scrollPane = new JScrollPane(taOut);
       panel.add(scrollPane, BorderLayout.CENTER);
@@ -56,8 +59,8 @@ public class FancyConsole extends JFrame
       consoleImage = new JLabel();
 
       panel.add(consoleImage, BorderLayout.NORTH);
-	    
-	    add(panel);
+        
+        add(panel);
 
     // to get the correct InputMap
       int condition = JTextArea.WHEN_FOCUSED;  
@@ -76,7 +79,7 @@ public class FancyConsole extends JFrame
       {
 
          @Override
-         public void actionPerformed(ActionEvent arg0) 
+         public void actionPerformed(ActionEvent arg0) //listens for events from the user
          {
            // handle input (on enter key)
             String text = taOut.getText();
@@ -100,7 +103,7 @@ public class FancyConsole extends JFrame
 
     CaretListener caretListen = new CaretListener() 
     {
-      public void caretUpdate(CaretEvent caretEvent) 
+      public void caretUpdate(CaretEvent caretEvent) //event listener
       {
         int caretPos = caretEvent.getDot();
         if (caretPos < consoleText.length())
@@ -110,26 +113,26 @@ public class FancyConsole extends JFrame
         }
       }
     };
-	  
+      
     taOut.addCaretListener(caretListen);
 
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setVisible(true);
-		setSize(guiWidth, guiHeight);
-		
-	    new SwingWorker<Void, String>() 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setVisible(true);
+        setSize(guiWidth, guiHeight);
+        
+        new SwingWorker<Void, String>() 
       { 
-	         protected Void doInBackground() throws Exception 
+             protected Void doInBackground() throws Exception //throws errors when needed
            { 
-	            Scanner s = new Scanner(outPipe);
-	            while (s.hasNextLine()) 
+                Scanner s = new Scanner(outPipe);
+                while (s.hasNextLine()) 
               {
-	            		 String line = s.nextLine();
-		            	 publish(line);
-	            }
-	            return null; 
-	        } 
-	         @Override protected void process(java.util.List<String> chunks) 
+                         String line = s.nextLine();
+                         publish(line);
+                }
+                return null; 
+            } 
+             @Override protected void process(java.util.List<String> chunks) 
            { 
              // Handle output
                for (String line : chunks)
@@ -138,13 +141,13 @@ public class FancyConsole extends JFrame
                }
 
                consoleText = taOut.getText();
-	         } 
+             } 
 
-	    }.execute(); 
+        }.execute(); 
 
-	}
+    }
 
-  public void setImage(String newImage)
+  public void setImage(String newImage) //calls and creates the frame
   {
       ImageIcon imageIcon = new ImageIcon(this.getClass().getResource(newImage));
       Image img = imageIcon.getImage();
